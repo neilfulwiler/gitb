@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd ~/my/side-projects/PlasticPatrolWeb/
+git branch 2>&1 >/dev/null
+if [ $? -ne 0 ]; then
+    echo "git branch failed. are you in a git repository?" && exit 1
+fi
 
 branch() {
     git branch --format='%(refname:short)' --sort=-committerdate
@@ -45,6 +48,7 @@ while true; do
         clear
         choice=$(choose $value)
         echo "switching to '$choice'"
+        exec git checkout $choice
         exit
     else
         case $next in
