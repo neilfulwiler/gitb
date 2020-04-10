@@ -1,0 +1,65 @@
+#!/bin/bash
+
+cd ~/my/side-projects/PlasticPatrolWeb/
+
+branch() {
+    git branch --format='%(refname:short)' --sort=-committerdate
+}
+
+index="1"
+
+show() {
+    selector="$1"
+    clear
+    branches=$(branch | grep "$selector")
+    num=$(echo "$branches" | wc -l)
+    if [[ "$index" -gt $num ]]
+    then
+        index="$num"
+    elif [[ "$index" -lt "1" ]]
+    then
+        index="1"
+    fi
+
+    echo "$branches" | awk "{if (NR==$index)"' printf("> \033[1;34m%s\033[0m\n", $1); else print}'
+    echo -n "branch: $1"
+}
+
+choose() {
+    branch | grep "$1" | awk "{if (NR==$index) print}"
+}
+
+value=""
+index=1
+while true; do
+    show "$value" 1
+    read -rsn 1 next
+    if [[ $(echo -n "$next" | od -An -t uC) -eq "127" ]]
+    then
+        if [[ ${#value} > 0  ]]
+        then
+            value="${value:0:$(( ${#value} - 1 ))}"
+        fi
+    elif [[ -z "$next" ]]
+    then
+        clear
+        choice=$(choose $value)
+        echo "switching to '$choice'"
+        exit
+    else
+        case $next in
+            j)
+                index="$(( $index + 1 ))"
+                ;;
+            k)
+                index="$(( $index - 1 ))"
+                ;;
+            q)
+                exit
+                ;;
+            *)
+                value="${value}${next}"
+                ;;
+        esac
+   fi
+done
