@@ -1,0 +1,6 @@
+let g:pymode_python = 'python3'
+nnoremap <Space> :noh<Esc>
+inoremap jk <Esc>
+let g:ctrlp_working_path_mode = 'r'
+set clipboard=unnamed
+set relativenumber
